@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ขอบคุณคุณครูไผ่🩵🩵🩵🩵 - Deep Ocean Theme</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background-color: #020024;
+        }
+
+        /* Deep Ocean Background */
+        .ocean-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            /* ไล่สีน้ำเงินเข้มแบบใต้ทะเลลึก */
+            background: linear-gradient(180deg, #020024 0%, #090979 45%, #00d4ff 100%);
+            z-index: 1;
+            transition: filter 2s ease-in-out;
+        }
+
+        /* แสงแดดส่องลงมาจากผิวน้ำ */
+        .sunlight {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200vw;
+            height: 100vh;
+            background: radial-gradient(ellipse at top, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        #main-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ปุ่มกดใต้ทะเล */
+        .ocean-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            color: #e0f7fa;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 212, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            animation: floatBtn 3s ease-in-out infinite;
+        }
+
+        .ocean-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 212, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* กล่องข้อความใต้น้ำ (Glassmorphism) */
+        #message-box {
+            background: rgba(10, 25, 60, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 3rem 2rem;
+            max-width: 90%;
+            width: 550px;
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0, 212, 255, 0.2);
+            transform: translateY(100px) scale(0.9);
+            opacity: 0;
+            transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+        }
+
+        #message-box.show {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        /* หัวใจใต้น้ำเรืองแสง */
+        .underwater-heart {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: heartbeat 2s infinite, glow 2s infinite alternate;
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.8));
+        }
+
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+            animation: floatUp linear forwards;
+            opacity: 0.7;
+        }
+
+        @keyframes floatBtn {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(-50vh) translateX(20px) scale(1);
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-120vh) translateX(-20px) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5)); }
+            to { filter: drop-shadow(0 0 25px rgba(0, 212, 255, 1)); }
+        }
+
+        .text-glow {
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.6), 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- พื้นหลังมหาสมุทร -->
+    <div class="ocean-bg" id="bg-layer"></div>
+    <div class="sunlight"></div>
+
+    <!-- Container สำหรับแสดง Effect ฟองอากาศและหัวใจ -->
+    <div id="particles-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-10 overflow-hidden"></div>
+
+    <!-- เนื้อหาหลัก -->
+    <div id="main-content">
+        
+        <!-- ปุ่มกดเริ่ม -->
+        <button id="start-btn" class="ocean-btn flex items-center gap-2">
+            🫧กดปุ่มนี้เพื่อรับเงินและคำอวยพร🫧
+        </button>
+
+        <!-- กล่องข้อความ (ซ่อนไว้ตอนแรก) -->
+        <div id="message-box" class="flex-col items-center justify-center">
+            <!-- รูปหัวใจใต้น้ำ -->
+            <div class="underwater-heart">🩵</div>
+            
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 text-cyan-200 text-glow">
+                รักครูไผ่มากๆนะคะ🩵😖
+            </h1>
+            
+            <p class="text-lg md:text-xl leading-relaxed mb-6 text-cyan-50">
+                ขอให้ครูไผ่มีความสุขกับการสอนนะคะ🌊<br>
+                ขอบคุณคุณครูที่คอยสอนคอยบ่นมาตลอด<br>
+                รักครูไผ่มากๆค่ะ ขอให้หนูได้เกรด 3 ขึ้นไป
+            </p>
+            
+            <div class="inline-block bg-cyan-900/40 rounded-full px-6 py-2 border border-cyan-400/30 text-cyan-100 font-medium shadow-lg">
+                จรรยมณฑน์ และเมธี รักวิชาเคมี และรักคุณครูนะ 🧪💙
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const messageBox = document.getElementById('message-box');
+        const particlesContainer = document.getElementById('particles-container');
+        const bgLayer = document.getElementById('bg-layer');
+
+        // อีโมจิสำหรับสร้างเอฟเฟกต์
+        const bubbleEmojis = ['🫧', '⚪', '∘', '°'];
+        const oceanHeartEmojis = ['💙', '🩵', '🫧', '✨', '💧'];
+
+        // ฟังก์ชันสุ่มตัวเลข
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // ฟังก์ชันสร้างอนุภาคลอย (Particles)
+        function createParticles(emojiArray, count, durationBase) {
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // สุ่มอีโมจิจาก Array
+                particle.innerText = emojiArray[Math.floor(Math.random() * emojiArray.length)];
+                
+                // สุ่มขนาด
+                const size = random(0.8, 2.5);
+                particle.style.fontSize = `${size}rem`;
+                
+                // สุ่มตำแหน่งเริ่มต้น (แกน X)
+                particle.style.left = `${random(2, 98)}vw`;
+                
+                // สุ่มตำแหน่งเริ่มต้น (แกน Y) ให้อยู่ขอบล่างของจอ
+                particle.style.top = `100vh`;
+                
+                // สุ่มระยะเวลาการลอยขึ้น (ฟองอากาศใต้น้ำจะลอยช้าๆ สลับเร็ว)
+                const duration = random(durationBase, durationBase + 5);
+                particle.style.animationDuration = `${duration}s`;
+                
+                // สุ่มดีเลย์
+                const delay = random(0, 2);
+                particle.style.animationDelay = `${delay}s`;
+
+                // เพิ่มลูกเล่นให้บางฟองโปร่งแสงกว่าปกติ
+                particle.style.opacity = random(0.3, 0.8);
+
+                particlesContainer.appendChild(particle);
+
+                // ลบ Element ทิ้งเมื่อแอนิเมชันจบ
+                setTimeout(() => {
+                    particle.remove();
+                }, (duration + delay) * 1000);
+            }
+        }
+
+        // ตอนแรกให้มีฟองอากาศลอยขึ้นมาเรื่อยๆ แบบช้าๆ
+        let bubbleInterval = setInterval(() => {
+            createParticles(bubbleEmojis, 2, 6);
+        }, 800);
+
+        // เมื่อกดปุ่ม
+        startBtn.addEventListener('click', () => {
+            // 1. ทำให้ปุ่มหายไป
+            startBtn.style.transform = 'scale(0) translateY(20px)';
+            startBtn.style.opacity = '0';
+            setTimeout(() => {
+                startBtn.style.display = 'none';
+            }, 400);
+
+            // 2. ทำให้พื้นหลังสว่างขึ้นเล็กน้อย (เรืองแสงใต้น้ำ)
+            bgLayer.style.filter = 'brightness(1.2) saturate(1.2)';
+
+            // 3. ระเบิดหัวใจและฟองอากาศชุดใหญ่ขึ้นมา
+            createParticles(oceanHeartEmojis, 50, 4);
+
+            // 4. เปลี่ยนให้ลอยหัวใจสีน้ำเงินและฟองอากาศอย่างต่อเนื่อง
+            clearInterval(bubbleInterval);
+            setInterval(() => {
+                createParticles(oceanHeartEmojis, 3, 5);
+            }, 1000);
+
+            // 5. แสดงกล่องข้อความที่มีรูปหัวใจใต้น้ำ
+            setTimeout(() => {
+                messageBox.style.display = 'flex';
+                // ใช้ Timeout นิดนึงเพื่อให้ CSS render ทันก่อนเพิ่ม class
+                setTimeout(() => {
+                    messageBox.classList.add('show');
+                }, 50);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
